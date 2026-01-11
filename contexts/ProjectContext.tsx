@@ -250,6 +250,7 @@ export const ProjectProvider: React.FC<ProjectProviderProps> = ({ children }) =>
       setCurrentProject(newProject);
       return true;
     } catch {
+      // Error parameter intentionally omitted as it's not used
       alert('Error al importar el proyecto. Asegúrate de que el archivo JSON sea válido.');
       return false;
     }
