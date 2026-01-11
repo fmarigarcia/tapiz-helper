@@ -49,8 +49,13 @@ export const ProjectProvider: React.FC<ProjectProviderProps> = ({ children }) =>
     if (typeof window !== 'undefined') {
       const storedProjects = localStorage.getItem('tapiz-projects');
       if (storedProjects) {
-        const parsedProjects = JSON.parse(storedProjects);
-        return parsedProjects.length > 0 ? parsedProjects[0] : null;
+        const parsed = JSON.parse(storedProjects) as Project[];
+        // Migrate old projects without selectedLine
+        const migrated = parsed.map((p) => ({
+          ...p,
+          selectedLine: p.selectedLine ?? null,
+        }));
+        return migrated.length > 0 ? migrated[0] : null;
       }
     }
     return null;
