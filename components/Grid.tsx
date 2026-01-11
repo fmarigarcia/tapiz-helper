@@ -111,46 +111,82 @@ export const Grid: React.FC<GridProps> = ({ selectedColor }) => {
   const fontSize = getFontSize();
 
   return (
-    <div className="overflow-auto max-h-[70vh] border-2 border-gray-300 rounded-lg p-4 bg-white">
-      <div
-        className="inline-block"
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-      >
-        {currentProject.grid.map((row, rowIndex) => {
-          // Calculate line number (1-based, counting from bottom)
-          const lineNumber = currentProject.rows - rowIndex;
-          const isSelectedLine = currentProject.selectedLine === lineNumber;
-          const pointNumbers = isSelectedLine
-            ? calculatePointNumbers(row, lineNumber)
-            : [];
-
-          return (
-            <div key={rowIndex} className="flex">
-              {row.map((cell, colIndex) => (
+    <div className="flex items-center justify-center h-full w-full p-4">
+      <div className="flex flex-col items-center">
+        {/* Grid with row numbers */}
+        <div className="flex">
+          {/* Row numbers (left side, bottom to top) */}
+          <div className="flex flex-col mr-2">
+            {currentProject.grid.map((_, rowIndex) => {
+              const lineNumber = currentProject.rows - rowIndex;
+              return (
                 <div
-                  key={`${rowIndex}-${colIndex}`}
-                  className={`${cellSize} border border-gray-200 cursor-crosshair transition-colors hover:opacity-80 relative flex items-center justify-center`}
-                  style={{ backgroundColor: cell.color }}
-                  onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
-                  onMouseEnter={() => handleMouseEnter(rowIndex, colIndex)}
+                  key={`row-label-${rowIndex}`}
+                  className={`${cellSize} flex items-center justify-center text-xs font-semibold text-gray-600`}
                 >
-                  {isSelectedLine && (
-                    <span
-                      className={`${fontSize} font-bold pointer-events-none select-none`}
-                      style={{
-                        color: isLightColor(cell.color) ? '#000000' : '#FFFFFF',
-                        textShadow: '0 0 2px rgba(0,0,0,0.5)',
-                      }}
-                    >
-                      {pointNumbers[colIndex]}
-                    </span>
-                  )}
+                  {lineNumber}
                 </div>
-              ))}
+              );
+            })}
+          </div>
+
+          {/* Grid cells */}
+          <div
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+          >
+            {currentProject.grid.map((row, rowIndex) => {
+              // Calculate line number (1-based, counting from bottom)
+              const lineNumber = currentProject.rows - rowIndex;
+              const isSelectedLine = currentProject.selectedLine === lineNumber;
+              const pointNumbers = isSelectedLine
+                ? calculatePointNumbers(row, lineNumber)
+                : [];
+
+              return (
+                <div key={rowIndex} className="flex">
+                  {row.map((cell, colIndex) => (
+                    <div
+                      key={`${rowIndex}-${colIndex}`}
+                      className={`${cellSize} border border-gray-200 cursor-crosshair transition-colors hover:opacity-80 relative flex items-center justify-center ${
+                        currentProject.selectedLine !== null && !isSelectedLine
+                          ? 'opacity-40'
+                          : ''
+                      }`}
+                      style={{ backgroundColor: cell.color }}
+                      onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
+                      onMouseEnter={() => handleMouseEnter(rowIndex, colIndex)}
+                    >
+                      {isSelectedLine && (
+                        <span
+                          className={`${fontSize} font-bold pointer-events-none select-none`}
+                          style={{
+                            color: isLightColor(cell.color) ? '#000000' : '#FFFFFF',
+                            textShadow: '0 0 2px rgba(0,0,0,0.5)',
+                          }}
+                        >
+                          {pointNumbers[colIndex]}
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Column numbers (bottom) */}
+        <div className="flex mt-2 ml-[calc(0.5rem+1.5rem)]">
+          {Array.from({ length: currentProject.cols }, (_, i) => (
+            <div
+              key={`col-label-${i}`}
+              className={`${cellSize} flex items-center justify-center text-xs font-semibold text-gray-600`}
+            >
+              {i + 1}
             </div>
-          );
-        })}
+          ))}
+        </div>
       </div>
     </div>
   );
