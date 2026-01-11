@@ -8,13 +8,23 @@ interface ToolbarProps {
 }
 
 export const Toolbar: React.FC<ToolbarProps> = ({ onNewProject }) => {
-  const { currentProject, clearGrid } = useProjects();
+  const { currentProject, clearGrid, setSelectedLine } = useProjects();
 
   const handleClearGrid = () => {
     if (currentProject && confirm('¿Estás seguro de que quieres limpiar la cuadrícula?')) {
       clearGrid();
     }
   };
+
+  const handleLineChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setSelectedLine(value === '' ? null : parseInt(value, 10));
+  };
+
+  // Generate line options (counting from bottom to top)
+  const lineOptions = currentProject
+    ? Array.from({ length: currentProject.rows }, (_, i) => i + 1)
+    : [];
 
   return (
     <div className="bg-white rounded-lg shadow-md p-4 flex flex-wrap gap-3">
@@ -31,6 +41,26 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onNewProject }) => {
         >
           Limpiar Cuadrícula
         </button>
+      )}
+      {currentProject && (
+        <div className="flex items-center gap-2">
+          <label htmlFor="line-selector" className="text-sm font-medium text-gray-700">
+            Línea:
+          </label>
+          <select
+            id="line-selector"
+            value={currentProject.selectedLine ?? ''}
+            onChange={handleLineChange}
+            className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Sin selección</option>
+            {lineOptions.map((line) => (
+              <option key={line} value={line}>
+                Línea {line}
+              </option>
+            ))}
+          </select>
+        </div>
       )}
       {currentProject && (
         <div className="flex items-center ml-auto text-sm text-gray-600">
