@@ -11,6 +11,7 @@ export interface Project {
   createdAt: string;
   updatedAt: string;
   selectedLine: number | null; // Line number (1-based, counting from bottom)
+  palette?: string[]; // Custom color palette for this project
 }
 
 export const PREDEFINED_COLORS = [
