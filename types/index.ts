@@ -10,6 +10,7 @@ export interface Project {
   grid: Cell[][];
   createdAt: string;
   updatedAt: string;
+  selectedLine: number | null; // Line number (1-based, counting from bottom)
 }
 
 export const PREDEFINED_COLORS = [

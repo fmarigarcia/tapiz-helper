@@ -11,6 +11,7 @@ interface ProjectContextType {
   selectProject: (id: string) => void;
   updateCell: (row: number, col: number, color: string) => void;
   clearGrid: () => void;
+  setSelectedLine: (line: number | null) => void;
 }
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
@@ -33,7 +34,12 @@ export const ProjectProvider: React.FC<ProjectProviderProps> = ({ children }) =>
     if (typeof window !== 'undefined') {
       const storedProjects = localStorage.getItem('tapiz-projects');
       if (storedProjects) {
-        return JSON.parse(storedProjects);
+        const parsed = JSON.parse(storedProjects) as Project[];
+        // Migrate old projects without selectedLine
+        return parsed.map((p) => ({
+          ...p,
+          selectedLine: p.selectedLine ?? null,
+        }));
       }
     }
     return [];
@@ -43,8 +49,13 @@ export const ProjectProvider: React.FC<ProjectProviderProps> = ({ children }) =>
     if (typeof window !== 'undefined') {
       const storedProjects = localStorage.getItem('tapiz-projects');
       if (storedProjects) {
-        const parsedProjects = JSON.parse(storedProjects);
-        return parsedProjects.length > 0 ? parsedProjects[0] : null;
+        const parsed = JSON.parse(storedProjects) as Project[];
+        // Migrate old projects without selectedLine
+        const migrated = parsed.map((p) => ({
+          ...p,
+          selectedLine: p.selectedLine ?? null,
+        }));
+        return migrated.length > 0 ? migrated[0] : null;
       }
     }
     return null;
@@ -72,6 +83,7 @@ export const ProjectProvider: React.FC<ProjectProviderProps> = ({ children }) =>
       grid: createEmptyGrid(rows, cols),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
+      selectedLine: null,
     };
     setProjects(prev => [...prev, newProject]);
     setCurrentProject(newProject);
@@ -133,6 +145,21 @@ export const ProjectProvider: React.FC<ProjectProviderProps> = ({ children }) =>
     );
   };
 
+  const setSelectedLine = (line: number | null) => {
+    if (!currentProject) return;
+
+    const updatedProject: Project = {
+      ...currentProject,
+      selectedLine: line,
+      updatedAt: new Date().toISOString(),
+    };
+
+    setCurrentProject(updatedProject);
+    setProjects(prev =>
+      prev.map(p => (p.id === currentProject.id ? updatedProject : p))
+    );
+  };
+
   return (
     <ProjectContext.Provider
       value={{
@@ -143,6 +170,7 @@ export const ProjectProvider: React.FC<ProjectProviderProps> = ({ children }) =>
         selectProject,
         updateCell,
         clearGrid,
+        setSelectedLine,
       }}
     >
       {children}
