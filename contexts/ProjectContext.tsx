@@ -65,7 +65,7 @@ export const ProjectProvider: React.FC<ProjectProviderProps> = ({ children }) =>
 
   const addProject = (name: string, rows: number, cols: number) => {
     const newProject: Project = {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       name,
       rows,
       cols,

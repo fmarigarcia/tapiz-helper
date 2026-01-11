@@ -7,6 +7,16 @@ interface GridProps {
   selectedColor: string;
 }
 
+// Cell size constants based on grid dimensions
+const CELL_SIZE_SMALL = 20; // Threshold for small grids
+const CELL_SIZE_MEDIUM = 40; // Threshold for medium grids
+const CELL_SIZE_LARGE = 60; // Threshold for large grids
+
+const CELL_CLASS_LARGE = 'w-8 h-8'; // For grids up to 20x20
+const CELL_CLASS_MEDIUM = 'w-6 h-6'; // For grids up to 40x40
+const CELL_CLASS_SMALL = 'w-4 h-4'; // For grids up to 60x60
+const CELL_CLASS_TINY = 'w-3 h-3'; // For grids larger than 60x60
+
 export const Grid: React.FC<GridProps> = ({ selectedColor }) => {
   const { currentProject, updateCell } = useProjects();
   const [isMouseDown, setIsMouseDown] = useState(false);
@@ -37,10 +47,10 @@ export const Grid: React.FC<GridProps> = ({ selectedColor }) => {
   // Calculate cell size based on grid dimensions to fit the screen
   const getCellSize = () => {
     const maxCells = Math.max(currentProject.rows, currentProject.cols);
-    if (maxCells <= 20) return 'w-8 h-8';
-    if (maxCells <= 40) return 'w-6 h-6';
-    if (maxCells <= 60) return 'w-4 h-4';
-    return 'w-3 h-3';
+    if (maxCells <= CELL_SIZE_SMALL) return CELL_CLASS_LARGE;
+    if (maxCells <= CELL_SIZE_MEDIUM) return CELL_CLASS_MEDIUM;
+    if (maxCells <= CELL_SIZE_LARGE) return CELL_CLASS_SMALL;
+    return CELL_CLASS_TINY;
   };
 
   const cellSize = getCellSize();
