@@ -18,11 +18,23 @@ const CELL_CLASS_MEDIUM = 'w-6 h-6'; // For grids up to 40x40
 const CELL_CLASS_SMALL = 'w-4 h-4'; // For grids up to 60x60
 const CELL_CLASS_TINY = 'w-3 h-3'; // For grids larger than 60x60
 
+// Function to determine if a color is light (needs dark text)
+const isLightColor = (color: string): boolean => {
+  // Light colors that need dark text for contrast
+  const lightColors = ['#FFFFFF', '#FFFF00', '#00FFFF', '#FFC0CB', '#FFD700', '#C0C0C0'];
+  return lightColors.includes(color.toUpperCase());
+};
+
 // Function to calculate point numbers for a line
 const calculatePointNumbers = (
   row: Cell[],
   lineNumber: number
 ): number[] => {
+  // Handle empty rows
+  if (row.length === 0) {
+    return [];
+  }
+  
   const isOddLine = lineNumber % 2 === 1;
   const cellColors = row.map((cell) => cell.color);
   
@@ -127,9 +139,7 @@ export const Grid: React.FC<GridProps> = ({ selectedColor }) => {
                     <span
                       className={`${fontSize} font-bold pointer-events-none select-none`}
                       style={{
-                        color: cell.color === '#FFFFFF' || cell.color === '#FFFF00' || cell.color === '#00FFFF' || cell.color === '#FFC0CB' || cell.color === '#FFD700' || cell.color === '#C0C0C0'
-                          ? '#000000'
-                          : '#FFFFFF',
+                        color: isLightColor(cell.color) ? '#000000' : '#FFFFFF',
                         textShadow: '0 0 2px rgba(0,0,0,0.5)',
                       }}
                     >
